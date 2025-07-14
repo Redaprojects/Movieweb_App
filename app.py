@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, or_
 
 from Movie_Web_App.datamanager.models import db, User, Movie
 import os
@@ -33,8 +33,11 @@ def list_users():
 
 @app.route('/users/<int:user_id>')
 def user_movies(user_id):
-
-    user = db.session.get(User, user_id)
+    """
+    Display all movies for a specific user, then render the HTML page and show the user's movies.
+    """
+    # user = db.session.get(User, user_id)
+    user = User.query.get_or_404(user_id)
     if not user:
         return f"User with ID {user_id} not found.", 404
     movies = data_manager.get_user_movies(user_id)
@@ -45,10 +48,10 @@ def user_movies(user_id):
 def add_user():
     """
     Display a form to add a new user and handle form submission.
-    GET: Show the form.
-    POST: Validate input and add the user to the database.
+    If the method is a POST, validate the input and add the user to the database.
+    Otherwise, it returns a get and shows the form.
     """
-    if request.method = 'POST':
+    if request.method == 'POST':
         name = request.form.get('name', '').strip()
 
         # Validate name input
@@ -60,11 +63,47 @@ def add_user():
         new_user = data_manager.add_user({'name': name})
         flash(f"User '{new_user.name}' added successfully!", "success")
         return redirect(url_for('list_users'))
+
     return render_template('add_user.html')
 
-# @app.route('/users/<user_id>/add_movie', methods=['POST'])
-# def add_movie():
-#     pass
+
+@app.route('/users/<user_id>/add_movie', methods=['GET', 'POST'])
+def add_movie():
+    """
+    Display form to add a movie (GET) and handle submission (POST).
+    Args:
+    user_id (int): ID of the user adding a movie.
+    Returns:
+    On GET: Rendered form.
+    On POST: Redirect to user's movie page.
+    """
+    user = User.query.get_or_404(user_id)
+
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        director = request.form.get('director', '').strip()
+        year = request.form.get('year', '').strip()
+        rating = request.form.get('rating', '').strip()
+
+        # Input validation
+        if not name or not director or not year or not rating:
+            flash('All fields are required!', 'error')
+        elif not year.isdigit() or not (1800 <= int(year) <= 2100):
+            flash('Year must be a valid number between 1800 and 2100.', 'error')
+        elif not rating.replace('.', '', 1).isdigit() or not (0 <= float(rating) <= 10):
+            flash('Rating must be a number between 0 and 10.', 'error')
+        else:
+            movie_data = {
+                'name': name,
+                'director': director,
+                'year': int(year),
+                'rating': float(rating)
+            }
+            data_manager.add_movie(user_id, movie_data)
+            flash(f'Movie "{name}" added successfully!', 'success')
+            return redirect(url_for('user_movies', user_id=user_id))
+
+    return render_template('add_movie.html', user=user)
 #
 # @app.route('/users/<user_id>/update_movie/<movie_id>')
 # def update_movie():

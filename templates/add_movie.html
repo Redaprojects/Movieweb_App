@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Movie for {{ user.name }} - MovieWeb App</title>
+</head>
+<body>
+    <h1>Add Movie for {{ user.name }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li><strong>{{ category.title() }}:</strong> {{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <label for="name">Movie Name:</label><br>
+        <input type="text" name="name" required><br><br>
+
+        <label for="director">Director:</label><br>
+        <input type="text" name="director" required><br><br>
+
+        <label for="year">Year:</label><br>
+        <input type="number" name="year" min="1800" max="2100" required><br><br>
+
+        <label for="rating">Rating (0-10):</label><br>
+        <input type="number" name="rating" min="0" max="10" step="0.1" required><br><br>
+
+        <input type="submit" value="Add Movie">
+    </form>
+
+    <a href="{{ url_for('user_movies', user_id=user.id) }}">← Back to {{ user.name }}'s Movies</a>
+</body>
+</html>
