@@ -11,7 +11,7 @@ class SQLiteDataManager(DataManagerInterface):
     #
     def __init__(self, db_file, app: Flask):
         """Initialize SQLite database with a Flask app."""
-        # self.db = app
+        self.app = app # Save app reference
         app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_file}'
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         db.init_app(app)
