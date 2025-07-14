@@ -1,26 +1,31 @@
-from flask_sqlalchemy import SQLAlchemy
-from models import db, User, Movie
-from data_manager_interface import DataManagerInterface
+# from flask_sqlalchemy import SQLAlchemy
+from Movie_Web_App.datamanager.data_manager_interface import DataManagerInterface
+from Movie_Web_App.datamanager.models import db, User, Movie
 from flask import Flask
 
 class SQLiteDataManager(DataManagerInterface):
     # def __init__(self, db_file_name):
     #     self.db = SQLAlchemy(db_file_name)
     #
-    """SQLite implementation of DataManagerInterface using SQLAlchemy."""
-
-    def __init__(self, app: Flask):
+    # """SQLite implementation of DataManagerInterface using SQLAlchemy."""
+    #
+    def __init__(self, db_file, app: Flask):
         """Initialize SQLite database with a Flask app."""
-        self.app = app
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///moviweb.db'
+        # self.db = app
+        app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_file}'
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         db.init_app(app)
 
-        with app.app_context():
-            db.create_all()
 
 
-    def get_all_users(self):
+    # def __init__(self, app: Flask):
+    #     """Initialize SQLAlchemy with a Flask app."""
+    #     self.db = SQLAlchemy()
+    #     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///moviweb.db'
+    #     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    #     self.db.init_app(app)
+
+    def get_users(self):
         """Return all users in the database."""
         with self.app.app_context():
             return User.query.all()
@@ -66,6 +71,17 @@ class SQLiteDataManager(DataManagerInterface):
                 setattr(movie, key, value)
             db.session.commit()
             return movie
+
+
+    def delete_user(self, user_id):
+        """Delete a movie from the database."""
+        with self.app.app_context():
+            user = User.query.get(user_id)
+            if user:
+                db.session.delete(user)
+                db.session.commit()
+                return True
+            return False
 
 
     def delete_movie(self, movie_id):

@@ -1,39 +1,38 @@
-from flask import Flask
 from abc import ABC, abstractmethod
 
 class DataManagerInterface(ABC):
-    # data_manager_interface.py
-    from abc import ABC, abstractmethod
+    """Abstract interface for movie/user data operations."""
 
-    class DataManagerInterface(ABC):
-        """Abstract interface for all data managers."""
+    @abstractmethod
+    def add_user(self, username: str):
+        """Add a new user to the database."""
+        pass
 
-        @abstractmethod
-        def get_all_users(self):
-            """Return a list of all users."""
-            pass
+    @abstractmethod
+    def get_users(self):
+        """Retrieve a list of all users."""
+        pass
 
-        @abstractmethod
-        def get_user_movies(self, user_id):
-            """Return a list of all movies for a given user."""
-            pass
+    @abstractmethod
+    def delete_user(self, user_id: int):
+        """Delete a user by ID."""
+        pass
 
-        @abstractmethod
-        def add_user(self, user):
-            """Add a new user."""
-            pass
+    @abstractmethod
+    def add_movie(self, user_id: int, title: str):
+        """Add a favorite movie to a user."""
+        pass
 
-        @abstractmethod
-        def add_movie(self, user_id, movie):
-            """Add a new movie to a user's list."""
-            pass
+    @abstractmethod
+    def update_movie(self, movie_id: int, updated_data: str):
+        """Update an existing movie's fields."""
 
-        @abstractmethod
-        def update_movie(self, movie_id, updated_data):
-            """Update the details of a specific movie."""
-            pass
+    @abstractmethod
+    def get_user_movies(self, user_id: int):
+        """Retrieve all movies for a given user."""
+        pass
 
-        @abstractmethod
-        def delete_movie(self, movie_id):
-            """Delete a movie from the database."""
-            pass
+    @abstractmethod
+    def delete_movie(self, movie_id: int):
+        """Delete a movie by ID."""
+        pass
