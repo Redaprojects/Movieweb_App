@@ -74,11 +74,8 @@ def add_user():
 def add_movie(user_id):
     """
     Display form to add a movie (GET) and handle submission (POST).
-    Args:
-    user_id (int): ID of the user adding a movie.
-    Returns:
-    On GET: Rendered form.
-    On POST: Redirect to user's movie page.
+    It returns a GET-rendered form.
+    Otherwise, a POST request: Redirect to the user's movie page.
     """
     user = User.query.get_or_404(user_id)
 
@@ -114,8 +111,7 @@ def add_movie(user_id):
 def edit_movie(movie_id):
     """
     Show the edit form (GET) and handle the update logic (POST).
-    Args: movie_id (int): ID of the movie to update.
-    Returns: Rendered form or redirect after successful update.
+    Then return: Rendered form or redirect after successful update.
     """
     movie = Movie.query.get_or_404(movie_id)
     user_id = movie.user_id
@@ -148,8 +144,21 @@ def edit_movie(movie_id):
 
 
 # @app.route('/users/<user_id>/delete_movie/<movie_id>')
-# def delete_movie():
-#     pass
+@app.route('/movies/<int:movie_id>/delete', methods=['GET', 'POST'])
+def delete_movie(movie_id):
+    """
+    Confirm and delete a movie from the database based on the movie ID,
+    then return to the user's movie list after deletion.
+    """
+    movie = Movie.query.get_or_404(movie_id)
+    user_id = movie.user_id
+
+    if request.method == 'POST':
+        data_manager.delete_movie(movie_id)
+        flash(f'Movie "{movie.name}" has been deleted.', 'success')
+        return redirect(url_for('user_movies', user_id=user_id))
+
+    return render_template('confirm_delete.html', movie=movie)
 
 
 if __name__ == '__main__':

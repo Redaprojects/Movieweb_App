@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Movie - {{ movie.name }}</title>
+</head>
+<body>
+    <h1>Delete Movie: "{{ movie.name }}"</h1>
+    <p>Are you sure you want to delete this movie?</p>
+
+    <form method="POST">
+        <input type="submit" value="Yes, delete it">
+        <a href="{{ url_for('user_movies', user_id=movie.user_id) }}">Cancel</a>
+    </form>
+</body>
+</html>
