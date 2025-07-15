@@ -1,11 +1,14 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, or_
-
+from flask import Flask, render_template, request, flash, redirect, url_for
 from Movie_Web_App.datamanager.models import db, User, Movie
 import os
+from dotenv import load_dotenv
+
+load_dotenv() # Loads variables from .env into os.environ
 
 from datamanager.sqlite_data_manager import SQLiteDataManager
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY')
 
 basedir = os.path.dirname(os.path.abspath(__file__)) # dirname replace it with abspath
 data_dir = os.path.join(basedir, 'data')  # '..'
@@ -68,7 +71,7 @@ def add_user():
 
 
 @app.route('/users/<user_id>/add_movie', methods=['GET', 'POST'])
-def add_movie():
+def add_movie(user_id):
     """
     Display form to add a movie (GET) and handle submission (POST).
     Args:
@@ -107,7 +110,42 @@ def add_movie():
 #
 # @app.route('/users/<user_id>/update_movie/<movie_id>')
 # def update_movie():
-#     pass
+@app.route('/movies/<int:movie_id>/edit', methods=['GET', 'POST'])
+def edit_movie(movie_id):
+    """
+    Show the edit form (GET) and handle the update logic (POST).
+    Args: movie_id (int): ID of the movie to update.
+    Returns: Rendered form or redirect after successful update.
+    """
+    movie = Movie.query.get_or_404(movie_id)
+    user_id = movie.user_id
+
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        director = request.form.get('director', '').strip()
+        year = request.form.get('year', '').strip()
+        rating = request.form.get('rating', '').strip()
+
+        # Validation
+        if not name or not director or not year or not rating:
+            flash('All fields are required.', 'error')
+        elif not year.isdigit() or not (1800 <= int(year) <= 2100):
+            flash('Year must be between 1800 and 2100.', 'error')
+        elif not rating.replace('.', '', 1).isdigit() or not (0 <= float(rating) <= 10):
+            flash('Rating must be a number between 0 and 10.', 'error')
+        else:
+            updated_data = {
+                'name': name,
+                'director': director,
+                'year': int(year),
+                'rating': float(rating)
+            }
+            data_manager.update_movie(movie_id, updated_data)
+            flash('Movie updated successfully.', 'success')
+            return redirect(url_for('user_movies', user_id=user_id))
+
+    return render_template('edit_movie.html', movie=movie)
+
 
 # @app.route('/users/<user_id>/delete_movie/<movie_id>')
 # def delete_movie():
