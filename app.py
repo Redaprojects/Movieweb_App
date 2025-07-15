@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import or_
 from Movie_Web_App.datamanager.models import db, User, Movie
 import os
 from dotenv import load_dotenv
@@ -159,6 +161,31 @@ def delete_movie(movie_id):
         return redirect(url_for('user_movies', user_id=user_id))
 
     return render_template('confirm_delete.html', movie=movie)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """Render custom page when a route is not found (404)."""
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    """Render custom page for internal server errors (500)."""
+    return render_template('500.html'), 500
+
+
+@app.route('/users/<int:user_id>')
+def view_user(user_id):
+    try:
+        user = data_manager.get_user(user_id)
+        if not user:
+            flash("User not found.", "warning")
+            return redirect(url_for('home'))
+        return render_template('user_detail.html', user=user)
+    except SQLAlchemyError as e:
+        app.logger.error(f"Database error: {e}")
+        return render_template('500.html'), 500
 
 
 if __name__ == '__main__':
