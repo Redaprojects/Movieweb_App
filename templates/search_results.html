@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">🔍 Search Results for "<span class="text-blue-600">{{ query }}</span>"</h2>
+
+{% if users %}
+<ul class="space-y-4">
+    {% for user in users %}
+    <li class="flex justify-between items-center p-4 bg-white rounded-lg shadow">
+        <span class="text-lg font-medium">{{ user.name }}</span>
+        <a href="{{ url_for('user_movies', user_id=user.id) }}"
+           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+            🎥 View Movies
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<div class="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded relative mt-6" role="alert">
+    <strong class="font-bold">No users found!</strong>
+    <span class="block sm:inline">Try a different name or ID.</span>
+</div>
+{% endif %}
+{% endblock %}

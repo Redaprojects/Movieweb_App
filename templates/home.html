@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-3xl font-bold mb-4">Welcome to MovieWeb App!</h1>
+<form action="{{ url_for('search_users') }}" method="get" class="flex gap-2">
+    <input type="text" name="query" placeholder="Search users..." class="border border-gray-300 rounded px-4 py-2 w-full">
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Search</button>
+</form>
+
+<h1 class="text-2xl font-bold mb-6">Users</h1>
+<ul class="space-y-3">
+    {% for user in users %}
+    <li class="flex justify-between items-center p-4 bg-white rounded-lg shadow">
+        <span class="text-lg">{{ user.name }}</span>
+        <a href="/users/{{ user.id }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">View Movies</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

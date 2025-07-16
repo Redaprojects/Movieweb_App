@@ -24,7 +24,9 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    return "Welcome to MovieWeb App!"
+    """ Fetch all users from the database"""
+    users = User.query.all()
+    return render_template('home.html', users=users)
 
 
 @app.route('/users')
@@ -188,5 +190,17 @@ def view_user(user_id):
         return render_template('500.html'), 500
 
 
+@app.route('/search')
+def search_users():
+    query = request.args.get("query", "").strip()
+    users = User.query.filter(
+        or_(
+            User.name.ilike(f"%{query}%"),
+            User.id == query if query.isdigit() else None
+        )
+    ).all()
+    return render_template('search_results.html', users=users, query=query)
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5002, debug=True)
