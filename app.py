@@ -24,9 +24,10 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    """ Fetch all users from the database"""
-    users = User.query.all()
-    return render_template('home.html', users=users)
+    """Fetch all users along with their movie counts."""
+    user_movie_counts = data_manager.get_users_with_movie_count()
+    # user_movie_counts is list of (User, movie_count)
+    return render_template('home.html', user_movie_counts=user_movie_counts)
 
 
 @app.route('/users')

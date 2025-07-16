@@ -1,17 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
 <h1 class="text-3xl font-bold mb-4">Welcome to MovieWeb App!</h1>
-<form action="{{ url_for('search_users') }}" method="get" class="flex gap-2">
-    <input type="text" name="query" placeholder="Search users..." class="border border-gray-300 rounded px-4 py-2 w-full">
+<form action="{{ url_for('search_users') }}" method="get" class="flex gap-2 mb-10">
+    <input type="text" name="query" placeholder="Search users..." class="border border-gray-300 rounded px-7 py-3 w-50">
     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Search</button>
 </form>
 
+<!-- Add User Button -->
+<div class="mb-6">
+    <a href="{{ url_for('add_user') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">+ Add User</a>
+</div>
+
 <h1 class="text-2xl font-bold mb-6">Users</h1>
-<ul class="space-y-3">
-    {% for user in users %}
-    <li class="flex justify-between items-center p-4 bg-white rounded-lg shadow">
-        <span class="text-lg">{{ user.name }}</span>
-        <a href="/users/{{ user.id }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">View Movies</a>
+<ul class="space-y-4">
+    {% for user, movie_count in user_movie_counts %}
+    <li class="flex justify-between items-center p-4 bg-white rounded-lg shadow" style="width:500px;">
+        <span class="text-lg">{{ user.name }} <span class="text-gray-500">({{ movie_count }} movies)</span></span>
+        <a href="{{ url_for('user_movies', user_id=user.id) }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">View Movies</a>
     </li>
     {% endfor %}
 </ul>

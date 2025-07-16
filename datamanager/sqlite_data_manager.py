@@ -1,4 +1,4 @@
-# from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from Movie_Web_App.datamanager.data_manager_interface import DataManagerInterface
 from Movie_Web_App.datamanager.models import db, User, Movie
 from flask import Flask
@@ -29,6 +29,12 @@ class SQLiteDataManager(DataManagerInterface):
         """Return all users in the database."""
         with self.app.app_context():
             return User.query.all()
+
+
+    def get_user(self, user_id):
+        """Retrieve a single user by ID from the database."""
+        with self.app.app_context():
+            return User.query.filter_by(id=user_id).first()
 
 
     def get_user_movies(self, user_id):
@@ -93,3 +99,20 @@ class SQLiteDataManager(DataManagerInterface):
                 db.session.commit()
                 return True
             return False
+
+
+    def get_users_with_movie_count(self):
+        """Return all users along with the count of their movies."""
+        with self.app.app_context():
+            # Query users and count movies per user
+            results = (
+                db.session.query(
+                    User,
+                    func.count(Movie.id).label('movie_count')
+                )
+                .outerjoin(Movie, User.id == Movie.user_id)
+                .group_by(User.id)
+                .all()
+            )
+            # Return list of tuples (User, movie_count)
+            return results
