@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="POST">
+  <div class="mb-3">
+    <label for="movie">Select Movie:</label>
+    <select name="movie_id" class="form-control">
+      {% for movie in movies %}
+        <option value="{{ movie.movie_id }}">{{ movie.title }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+
+  <div class="mb-3">
+    <label for="rating">Rating (1.0 - 5.0):</label>
+    <input type="number" name="rating" step="0.1" min="1" max="5" class="form-control">
+  </div>
+
+  <div class="mb-3">
+    <label for="review_text">Review:</label>
+    <textarea name="review_text" class="form-control" rows="4"></textarea>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Submit Review</button>
+</form>
+
+{% endblock %}

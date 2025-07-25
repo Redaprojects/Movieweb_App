@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_
-from Movie_Web_App.datamanager.models import db, User, Movie
+from Movie_Web_App.datamanager.models import db, User, Movie, Review
 import os
 from dotenv import load_dotenv
 
@@ -17,7 +17,7 @@ data_dir = os.path.join(basedir, 'data')  # '..'
 os.makedirs(data_dir, exist_ok=True)
 db_path = os.path.join(data_dir, 'moviewebapp.db')
 
-data_manager = SQLiteDataManager(db_path, app)  # Use the appropriate path to your Database
+data_manager = SQLiteDataManager(db_path, app)  # Use the appropriate path to the Database
 
 with app.app_context():
     db.create_all()
@@ -203,5 +203,31 @@ def search_users():
     return render_template('search_results.html', users=users, query=query)
 
 
+@app.route('/add_review', methods=['GET', 'POST'])
+def add_review():
+    users = User.query.all()
+    movies = Movie.query.all()
+
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        movie_id = request.form.get('movie_id')
+        rating = request.form.get('rating')
+        review_text = request.form.get('review_text')
+
+        review = Review(
+            user_id=user_id,
+            movie_id=movie_id,
+            rating=float(rating) if rating else None,
+            review_text=review_text
+        )
+        db.session.add(review)
+        db.session.commit()
+        flash("Review added successfully!", "success")
+        return redirect(url_for('add_review'))
+
+    return render_template('add_review.html', users=users, movies=movies)
+
+
+
 if __name__ == '__main__':
-    app.run(port=5002, debug=True)
+    app.run(port=5000, debug=True)

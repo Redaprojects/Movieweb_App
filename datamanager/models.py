@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-
+from datetime import datetime
 db = SQLAlchemy()
 
 
@@ -24,3 +24,21 @@ class Movie(db.Model):
     rating = db.Column(db.Float, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+
+
+class Review(db.Model):
+    __tablename__ = 'reviews'
+
+    review_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=False)
+    review_text = db.Column(db.Text, nullable=True)
+    rating = db.Column(db.Float, nullable=True)  # star rating out of 5
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='reviews')
+    movie = db.relationship('Movie', backref='reviews')
+
+    def __repr__(self):
+        return f"<Review user={self.user_id} movie={self.movie_id} rating={self.rating}>"

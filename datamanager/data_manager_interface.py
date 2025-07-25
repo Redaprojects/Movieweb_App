@@ -45,3 +45,8 @@ class DataManagerInterface(ABC):
     def get_users_with_movie_count(self):
         """Return all users along with the count of their movies."""
         pass
+
+    @abstractmethod
+    def add_review(self):
+        """Add review to a movie"""
+        pass

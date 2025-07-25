@@ -12,7 +12,9 @@
                 <p class="text-sm text-gray-600">
                     <strong>Director:</strong> {{ movie.director }}<br>
                     <strong>Year:</strong> {{ movie.year }}<br>
-                    <strong>Rating:</strong> {{ movie.rating }}/10
+                    <strong>Rating:</strong> {{ movie.rating }}/10<br>
+                    <a href="{{ url_for('add_review', movie_id=movie.movie_id) }}" class="btn btn-outline-secondary">➕ Add Review</a>
+
                 </p>
             </div>
             <div class="flex gap-2">

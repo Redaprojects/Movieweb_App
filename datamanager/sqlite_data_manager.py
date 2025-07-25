@@ -14,6 +14,10 @@ class SQLiteDataManager(DataManagerInterface):
         self.app = app # Save app reference
         app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_file}'
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        # This prevents SQLAlchemy from expiring objects after commit, so
+        # new_user.name is still accessible without needing to reload.
+        app.config['SQLALCHEMY_EXPIRE_ON_COMMIT'] = False
+
         db.init_app(app)
 
 
@@ -49,6 +53,7 @@ class SQLiteDataManager(DataManagerInterface):
             new_user = User(name=user['name'])
             db.session.add(new_user)
             db.session.commit()
+            db.session.refresh(new_user) # # Re-attaches and reloads the instance
             return new_user
 
 
@@ -116,3 +121,7 @@ class SQLiteDataManager(DataManagerInterface):
             )
             # Return list of tuples (User, movie_count)
             return results
+
+
+    def add_review(self):
+        pass
